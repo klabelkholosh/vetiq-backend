@@ -1,15 +1,10 @@
-import { config } from 'dotenv';
-config();
-import express from 'express';
-import cors from 'cors';
-import bodyParser from 'body-parser';
-import pkg from 'better-sse';
-
-const { createSession } = pkg;
-
-import { Configuration, OpenAIApi } from 'openai';
-
-const port = 5000;
+require('dotenv').config();
+const express = require('express');
+const cors = require('cors');
+const bodyParser = require('body-parser');
+const pkg = require('better-sse');
+const { Configuration, OpenAIApi } = require('openai');
+const port = 8080;
 
 const configuration = new Configuration({
   organization: 'org-LeQDNNNdvDyHtQJQIPlAKOVa',
@@ -31,7 +26,7 @@ app.get('/chat', async (req, res) => {
     const { prompt } = req.query;
 
     console.log('prompt:', prompt);
-    const session = await createSession(req, res);
+    const session = await pkg.createSession(req, res);
     if (!session.isConnected) throw new Error('Not connected');
 
     // Generate a response with ChatGPT
