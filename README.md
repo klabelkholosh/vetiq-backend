@@ -11,4 +11,3 @@ You'll need a .env file in the root directory, with the following info:
 ## License
 
 MIT
-# vetiq
