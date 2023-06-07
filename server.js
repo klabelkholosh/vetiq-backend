@@ -9,6 +9,8 @@ const { createSession } = pkg;
 
 import { Configuration, OpenAIApi } from 'openai';
 
+const port = 5000;
+
 const configuration = new Configuration({
   organization: 'org-LeQDNNNdvDyHtQJQIPlAKOVa',
   apiKey: process.env.OPENAI_API_KEY,
@@ -115,7 +117,6 @@ app.get('/', (req, res) => {
 });
 
 // Start the server
-const port = 8080;
 app.listen(port, () => {
   console.log(`VetIQ OpenAI Server listening on port ${port}`);
 });
