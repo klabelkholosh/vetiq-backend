@@ -19,8 +19,7 @@ const configuration = new Configuration({
 const openai = new OpenAIApi(configuration);
 
 // Set up the server
-
-export const app = express();
+const app = express();
 app.use(bodyParser.json());
 app.use(cors());
 

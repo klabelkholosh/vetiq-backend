@@ -1,4 +1,7 @@
 {
+  "scripts": {
+    "start": "node server.js"
+  },
   "type": "module",
   "dependencies": {
     "better-sse": "^0.8.0",
