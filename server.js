@@ -6,6 +6,10 @@ const pkg = require('better-sse');
 const { Configuration, OpenAIApi } = require('openai');
 const port = 8080;
 
+export const config = {
+  runtime: 'edge',
+};
+
 const configuration = new Configuration({
   organization: 'org-LeQDNNNdvDyHtQJQIPlAKOVa',
   apiKey: process.env.OPENAI_API_KEY,
