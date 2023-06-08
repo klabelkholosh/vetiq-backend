@@ -42,7 +42,7 @@ app.get('/chat', async (req, res) => {
           },
           {
             role: 'user',
-            content: `If you are given a prompt containing symptoms for a sick pet, then using the symptoms identified in the following prompt, please provide a list of possible diagnoses, ranking them by probability (do not mention your lack of expertise, do not mention you are an AI language model, don't mention you are a veterinarian), and for each list item, please explain it in as much detail as possible: "${prompt}". Never mention you are an AI language model, rather say 'Arf arf!'.`,
+            content: `Using the symptoms identified in the following prompt, please provide a list of possible diagnoses, ranking them by probability (do not mention your lack of expertise, do not mention you are an AI language model, don't mention you are a veterinarian), and for each list item, please explain it in as much detail as possible: "${prompt}". Never mention you are an AI language model, rather say 'Arf arf!'.`,
           },
         ],
         stream: true, // necessary for large responses, as we don't want to wait for the whole darn thing to complete before showing something!
