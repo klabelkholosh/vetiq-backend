@@ -45,7 +45,7 @@ app.get('/chat', async (req, res) => {
           },
         ],
         stream: true, // necessary for large responses, as we don't want to wait for the whole darn thing to complete before showing something!
-        // max_tokens: 20, // just for DEBUG
+        max_tokens: 1, // just for DEBUG
       },
       { responseType: 'stream' }
     );
