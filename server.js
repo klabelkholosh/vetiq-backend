@@ -26,6 +26,7 @@ app.get('/chat', async (req, res) => {
     const { prompt } = req.query;
 
     console.log('prompt:', prompt);
+    // res.type('text/event-stream');
     const session = await pkg.createSession(req, res);
     if (!session.isConnected) throw new Error('Not connected');
 
@@ -45,7 +46,7 @@ app.get('/chat', async (req, res) => {
           },
         ],
         stream: true, // necessary for large responses, as we don't want to wait for the whole darn thing to complete before showing something!
-        max_tokens: 1, // just for DEBUG
+        // max_tokens: 1, // just for DEBUG
       },
       { responseType: 'stream' }
     );
