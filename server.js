@@ -55,14 +55,14 @@ app.get('/chat', async (req, res) => {
     // const session = await createSession(req, res);
     // upon receiving a data chunk...
     chatCC.data.on('data', (data) => {
-      console.log('data.toString:', data.toString('utf8').split('data: '));
+      //console.log('data.toString:', data.toString('utf8').split('data: '));
 
       let jsonMsg = data.toString('utf8').split('data: ');
 
       jsonMsg.forEach((jsonM) => {
         if (jsonM.startsWith('{"id":')) {
           let chunk = JSON.parse(jsonM).choices[0].delta.content;
-          console.log(`|${chunk}|`);
+          //console.log(`|${chunk}|`);
           if (!chunk) {
             return;
           }
@@ -71,13 +71,13 @@ app.get('/chat', async (req, res) => {
           var match = /\r|\n/.exec(chunk);
           if (match) {
             // chunk = '';
-            console.log('BREAK');
+            // console.log('BREAK');
           }
 
           session.push({ text: chunk });
         } else if (jsonM.startsWith('[DONE]')) {
           session.push({ text: '[[DONE]]' });
-          console.log('Finished!');
+          // console.log('Finished!');
           return;
         }
       });
