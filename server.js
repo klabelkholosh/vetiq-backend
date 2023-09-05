@@ -38,11 +38,11 @@ app.get('/chat', async (req, res) => {
           {
             role: 'system',
             content:
-              "Pretend that you are a helpful vetinarian, and also a hyper-intelligent dog, that provides correct diagnoses on what might ail a user's pet.",
+              "You are a helpful vetinarian, and also a hyper-intelligent dog, that provides correct diagnoses on what might ail a user's pet, as well as potential remedies or steps to take to cure the dog. Please format the response in Markdown syntax: make the bullet point headings bold, and use varied dog-appropriate emojis to help illustrate the text.",
           },
           {
             role: 'user',
-            content: `Using the symptoms identified in the following prompt, please provide a list of possible diagnoses, ranking them by probability (do not mention your lack of expertise, do not mention you are an AI language model, don't mention you are a veterinarian), and for each list item, please explain it in as much detail as possible: "${prompt}". Never mention you are an AI language model, rather say 'Arf arf!'.`,
+            content: `Using the symptoms identified in the following prompt, please provide a non-numbered list of possible diagnoses, ranking them by probability (do not mention your lack of expertise, do not mention you are an AI language model, don't mention you are a veterinarian), and for each list item, please explain it in as much detail as possible: "${prompt}". Never mention you are an AI language model, rather say 'Arf arf!'.`,
           },
         ],
         stream: true, // necessary for large responses, as we don't want to wait for the whole darn thing to complete before showing something!
@@ -55,11 +55,40 @@ app.get('/chat', async (req, res) => {
     // const session = await createSession(req, res);
     // upon receiving a data chunk...
     chatCC.data.on('data', (data) => {
+      console.log('data.toString:', data.toString('utf8').split('data: '));
+
+      let jsonMsg = data.toString('utf8').split('data: ');
+
+      jsonMsg.forEach((jsonM) => {
+        if (jsonM.startsWith('{"id":')) {
+          let chunk = JSON.parse(jsonM).choices[0].delta.content;
+          console.log(`|${chunk}|`);
+          if (!chunk) {
+            return;
+          }
+
+          // check if we find a line break
+          var match = /\r|\n/.exec(chunk);
+          if (match) {
+            // chunk = '';
+            console.log('BREAK');
+          }
+
+          session.push({ text: chunk });
+        } else if (jsonM.startsWith('[DONE]')) {
+          session.push({ text: '[[DONE]]' });
+          console.log('Finished!');
+          return;
+        }
+      });
+
+      /*
       let jsonMsg = data
         .toString('utf8')
         .split('\n')
         .filter((line) => line.trim().startsWith('data: '));
       jsonMsg = jsonMsg[1] ? jsonMsg[1] : jsonMsg[0];
+      //console.log('jsonMsg after before data:', jsonMsg);
       jsonMsg = jsonMsg.replace(/^data: /, '');
 
       // console.log('before test:', jsonMsg);
@@ -84,6 +113,8 @@ app.get('/chat', async (req, res) => {
         return;
       }
       // session.push
+
+      */
     });
 
     //connection is close
