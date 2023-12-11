@@ -19,7 +19,7 @@ app.use(bodyParser.json());
 app.use(cors());
 
 // Set up the ChatGPT endpoint
-app.get('/chat', async (req, res) => {
+app.get('/vetiqbkend/chat', async (req, res) => {
   try {
     console.log('request received...');
     // Get the prompt from the request
@@ -61,60 +61,22 @@ app.get('/chat', async (req, res) => {
 
       jsonMsg.forEach((jsonM) => {
         if (jsonM.startsWith('{"id":')) {
-          let chunk = JSON.parse(jsonM).choices[0].delta.content;
-          //console.log(`|${chunk}|`);
-          if (!chunk) {
+          if (tryParseJSONObject(jsonM)) {
+            let chunk = JSON.parse(jsonM).choices[0].delta.content;
+            //console.log(`|${chunk}|`);
+            if (!chunk) {
+              return;
+            }
+
+            session.push({ text: chunk });
+          } else {
             return;
           }
-
-          // check if we find a line break
-          var match = /\r|\n/.exec(chunk);
-          if (match) {
-            // chunk = '';
-            // console.log('BREAK');
-          }
-
-          session.push({ text: chunk });
         } else if (jsonM.startsWith('[DONE]')) {
           session.push({ text: '[[DONE]]' });
-          // console.log('Finished!');
           return;
         }
       });
-
-      /*
-      let jsonMsg = data
-        .toString('utf8')
-        .split('\n')
-        .filter((line) => line.trim().startsWith('data: '));
-      jsonMsg = jsonMsg[1] ? jsonMsg[1] : jsonMsg[0];
-      //console.log('jsonMsg after before data:', jsonMsg);
-      jsonMsg = jsonMsg.replace(/^data: /, '');
-
-      // console.log('before test:', jsonMsg);
-      if (jsonMsg !== '[DONE]') {
-        let chunk = JSON.parse(jsonMsg).choices[0].delta.content;
-        console.log(`|${chunk}|`);
-        if (!chunk) {
-          return;
-        }
-
-        // check if we find a line break
-        var match = /\r|\n/.exec(chunk);
-        if (match) {
-          // chunk = '';
-          console.log('BREAK');
-        }
-
-        session.push({ text: chunk });
-      } else {
-        session.push({ text: '[[DONE]]' });
-        console.log('Finished!');
-        return;
-      }
-      // session.push
-
-      */
     });
 
     //connection is close
@@ -138,7 +100,7 @@ app.get('/chat', async (req, res) => {
 
 // just if we want to check in-browser that the server is running
 
-app.get('/', (req, res) => {
+app.get('/vetiqbkend/', (req, res) => {
   res.send('VetIQ OpenAI Server up and running');
 });
 
@@ -146,3 +108,28 @@ app.get('/', (req, res) => {
 app.listen(port, () => {
   console.log(`VetIQ OpenAI Server listening on port ${port}`);
 });
+
+/**
+ * If you don't care about primitives and only objects then this function
+ * is for you, otherwise look elsewhere.
+ * This function will return `false` for any valid json primitive.
+ * EG, 'true' -> false
+ *     '123' -> false
+ *     'null' -> false
+ *     '"I'm a string"' -> false
+ */
+function tryParseJSONObject(jsonString) {
+  try {
+    var o = JSON.parse(jsonString);
+
+    // Handle non-exception-throwing cases:
+    // Neither JSON.parse(false) or JSON.parse(1234) throw errors, hence the type-checking,
+    // but... JSON.parse(null) returns null, and typeof null === "object",
+    // so we must check for that, too. Thankfully, null is falsey, so this suffices:
+    if (o && typeof o === 'object') {
+      return o;
+    }
+  } catch (e) {}
+
+  return false;
+}
