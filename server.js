@@ -25,7 +25,7 @@ app.get('/vetiqbkend/chat', async (req, res) => {
     // Get the prompt from the request
     const { prompt } = req.query;
 
-    console.log('prompt:', prompt);
+    // console.log('prompt:', prompt);
     // res.type('text/event-stream');
     const session = await pkg.createSession(req, res);
     if (!session.isConnected) throw new Error('Not connected');
@@ -55,7 +55,7 @@ app.get('/vetiqbkend/chat', async (req, res) => {
     // const session = await createSession(req, res);
     // upon receiving a data chunk...
     chatCC.data.on('data', (data) => {
-      //console.log('data.toString:', data.toString('utf8').split('data: '));
+      console.log('data.toString:', data.toString('utf8').split('data: '));
 
       let jsonMsg = data.toString('utf8').split('data: ');
 
@@ -90,10 +90,9 @@ app.get('/vetiqbkend/chat', async (req, res) => {
     });
   } catch (error) {
     if (error.response) {
-      console.log(error.response.status);
-      console.log(error.response.data);
+      console.log('ERROR STATUS:', error.response.status);
     } else {
-      console.log(error.message);
+      console.log('ERROR MESSAGE:', error.message);
     }
   }
 });
